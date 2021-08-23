@@ -1,0 +1,12 @@
+Use Windows.pkg
+Use cApplication.pkg
+
+Object oApplication is a cApplication
+    Set pbPreserveEnvironment to False
+    Set peHelpType to htNoHelp
+
+End_Object
+
+Use Demo.dg
+
+Send Popup of oDemo

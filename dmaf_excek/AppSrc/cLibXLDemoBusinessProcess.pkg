@@ -1,0 +1,27 @@
+Use Batchdd.pkg
+Use LibXL.pkg
+
+Object oLibXL is a cLibXL
+//    Set psLicenseName to "YourLicenseName"
+//    Set psLicenseKey  to "YourLicenseKey"
+End_Object
+
+Class cLibXLDemoBusinessProcess is a BusinessProcess
+
+    Procedure Construct_Object
+        Forward Send Construct_Object
+
+        Set Display_Error_State to True
+    End_Procedure
+
+    Function DemoFilesPath Returns String
+        String sPath
+
+        Get psHome of (phoWorkspace(ghoApplication)) to sPath
+        If (Right(sPath,1) <> '\') Add '\' to sPath
+        Add "DemoFiles\" to sPath
+
+        Function_Return sPath
+    End_Function
+
+End_Class

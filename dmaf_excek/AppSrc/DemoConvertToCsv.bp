@@ -1,0 +1,82 @@
+Use cLibXLDemoBusinessProcess.pkg
+
+// Read the first sheet of an Excel file (xls or xlsx) using LibXL and write it to a CSV file.
+//
+// This class does dumb conversion, asssuming every cell contains a string. Better results can be
+// achieved with more low-level work.
+Object oDemoConvertToCsv_BP is a cLibXLDemoBusinessProcess
+    // the full path of the Excel file to convert
+    Property String psFileName
+
+    Procedure OnProcess
+        Integer iChannel
+        String  sBasePath
+        String  sDestFile
+        String  sSrcFile
+
+        // open output file
+        Get Seq_New_Channel to iChannel
+        If (iChannel = DF_SEQ_CHANNEL_NOT_AVAILABLE) Begin
+            Send Stop_Box "No I/O channel available"
+            Procedure_Return
+        End
+
+        Get DemoFilesPath to sBasePath
+        Move (sBasePath + 'Converted.csv') to sDestFile
+        Direct_Output channel iChannel (ToANSI(sDestFile))
+
+        Get psFileName to sSrcFile
+        Send ProcessBook sSrcFile iChannel
+
+        // clean up
+        Close_Output channel iChannel
+        Send Seq_Release_Channel iChannel
+    End_Procedure
+
+    Procedure ProcessBook String sSrcFile Integer iCsvChannel
+        Handle  hoBook hoSheet
+
+        Get Load of oLibXL sSrcFile to hoBook
+        If (hoBook = 0) Begin
+            Send Stop_Box "Could not open Excel file"
+            Procedure_Return
+        End
+
+        Get Sheet of hoBook 0 to hoSheet
+        If (hoSheet = 0) Begin
+            Send Destroy of hoBook
+            Send Stop_Box "Could not open first Excel sheet"
+            Procedure_Return
+        End
+
+        Send ProcessSheet hoSheet iCsvChannel
+
+        Send Destroy of hoSheet
+        Send Destroy of hoBook
+    End_Procedure
+
+    Procedure ProcessSheet Handle hoSheet Integer iCsvChannel
+        Integer iCol iFirstCol iLastCol
+        Integer iRow iFirstRow iLastRow
+        String  sValue
+
+        Get FirstRow of hoSheet to iFirstRow
+        Get LastRow  of hoSheet to iLastRow
+        Get FirstCol of hoSheet to iFirstCol
+        Get LastCol  of hoSheet to iLastCol
+
+        For iRow from iFirstRow to iLastRow
+            For iCol from iFirstCol to iLastCol
+                If (iCol <> iFirstCol) Write channel iCsvChannel ','
+
+                Get ReadValue of hoSheet iRow iCol to sValue
+                If (sValue <> '') Begin
+                    Move (Replaces('"', sValue, '""')) to sValue
+                    Write channel iCsvChannel '"' sValue '"'
+                End
+            Loop
+            Writeln channel iCsvChannel
+        Loop
+    End_Procedure
+
+End_Object

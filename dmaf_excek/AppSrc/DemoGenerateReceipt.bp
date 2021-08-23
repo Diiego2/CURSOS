@@ -1,0 +1,170 @@
+Use cLibXLDemoBusinessProcess.pkg
+
+// Same as LibXL "Writing data" example (2017-05-12)
+// [http://libxl.com/write-excel-data.html]
+
+// Things to note:
+// * no ToANSI() needed
+// * No void return types
+// * cleaner syntax, with some optimizations
+
+Object oDemoGenerateReceipt_BP is a cLibXLDemoBusinessProcess
+
+    Procedure OnProcess
+        Handle  hoBook hoSheet
+        Handle  hoFont10 hoFont12 hoTextFont hoTitleFont
+        Handle  hoBorderFormat hoCompanyFormat hoDateFormat hoPhoneFormat hoTextFormat hoTitleFormat
+        Handle  hoDollarFormat hoPercentFormat hoTextRightFormat hoThankFormat
+        Integer iCol iRow
+        String  sBasePath
+        xlPictureId iLogoId
+
+        Get DemoFilesPath to sBasePath
+
+        Get CreateBook of oLibXL to hoBook
+        Get AddPictureFromFile of hoBook (sBasePath+"logo.png") to iLogoId
+
+       // fonts
+
+        Get AddFont of hoBook "Century Gothic" 8 to hoTextFont
+        // compare with low-level:
+        //   Move (xlBookAddFont(aBook, 0)) to aTextFont
+        //   Move (xlFontSetSize(aTextFont, 8)) to gVoid
+        //   Move (xlFontSetName(aTextFont, ToANSI("Century Gothic"))) to gVoid
+
+        Get Duplicate of hoTextFont to hoTitleFont
+        Set piSize of hoTitleFont to 38
+        Set piColor of hoTitleFont to XL_COLOR_GRAY25
+
+        Get AddFont of hoBook "Century Gothic" 12 to hoFont12
+
+        Get AddFont of hoBook "Century Gothic" 10 to hoFont10
+
+        // formats
+
+        Get AddFormat of hoBook to hoTextFormat
+        Set phoFont of hoTextFormat to hoTextFont
+        Set peAlignH of hoTextFormat to XL_ALIGNH_LEFT
+
+        Get AddFormat of hoBook to hoTitleFormat
+        Set phoFont of hoTitleFormat to hoTitleFont
+        Set peAlignH of hoTitleFormat to XL_ALIGNH_RIGHT
+
+        Get AddFormat of hoBook to hoCompanyFormat
+        Set phoFont of hoCompanyFormat to hoFont12
+
+        Get Duplicate of hoTextFormat to hoDateFormat
+        Set peNumFormat of hoDateFormat to (AddCustomNumFormat(hoBook, ;
+                "[$-409]mmmm\ d\,\ yyyy;@"))
+
+        Get Duplicate of hoTextFormat to hoPhoneFormat
+        Set peNumFormat of hoPhoneFormat to (AddCustomNumFormat(hoBook, ;
+                "[<=9999999]###\-####;\(###\)\ ###\-####"))
+
+        Get Duplicate of hoTextFormat to hoBorderFormat
+        Send SetBorderStyle of hoBorderFormat XL_BORDERSTYLE_THIN
+        Send SetBorderColor of hoBorderFormat XL_COLOR_GRAY25
+        Set peAlignV of hoBorderFormat to XL_ALIGNV_CENTER
+
+        Get Duplicate of hoBorderFormat to hoPercentFormat
+        Set peNumFormat of hoPercentFormat to (AddCustomNumFormat(hoBook, "#%_)"))
+        Set peAlignH of hoPercentFormat to XL_ALIGNH_RIGHT
+
+        Get Duplicate of hoTextFormat to hoTextRightFormat
+        Set peAlignH of hoTextRightFormat to XL_ALIGNH_RIGHT
+        Set peAlignV of hoTextRightFormat to XL_ALIGNV_CENTER
+
+        Get AddFormat of hoBook to hoThankFormat
+        Set phoFont of hoThankFormat to hoFont10
+        Set peAlignH of hoThankFormat to XL_ALIGNH_CENTER
+
+        Get Duplicate of hoBorderFormat to hoDollarFormat
+        Set peNumFormat of hoDollarFormat to (AddCustomNumFormat(hoBook, ;
+                "_($* # ##0.00_);_($* (# ##0.00);_($* -??_);_(@_)"))
+
+        // actions
+
+        Get AddSheet of hoBook "Sales Receipt" to hoSheet
+
+        Set pbDisplayGridlines of hoSheet to False
+
+        Set piColumnWidth of hoSheet 1 to 36
+        Set piColumnWidth of hoSheet 0 to 10
+        Set piColumnWidth of hoSheet 2 to 11
+        Set piColumnWidth of hoSheet 3 to 11
+        Set piColumnWidth of hoSheet 4 to 11
+
+        Set piRowHeight of hoSheet 2 to 47.25
+        Send WriteStringWithFormat of hoSheet 2 1 "Sales Receipt" hoTitleFormat
+        Send MergeCells of hoSheet 2 1 2 4
+        Send SetPictureSized of hoSheet iLogoId 2 1 0 0 50 50
+
+        Send WriteStringWithFormat of hoSheet 4 0 "Apricot Ltd." hoCompanyFormat
+        Send WriteStringWithFormat of hoSheet 4 3 "Date:" hoTextFormat
+        Send WriteFormulaWithFormat of hoSheet 4 4 "TODAY()" hoDateFormat
+
+        Send WriteStringWithFormat of hoSheet 5 3 "Receipt #:" hoTextFormat
+        Send WriteNumberWithFormat of hoSheet 5 4 652 hoTextFormat
+
+        Send WriteStringWithFormat of hoSheet 8 0 "Sold to:" hoTextFormat
+        Send WriteStringWithFormat of hoSheet 8 1 "John Smith" hoTextFormat
+        Send WriteStringWithFormat of hoSheet 9 1 "Pineapple Ltd." hoTextFormat
+        Send WriteStringWithFormat of hoSheet 10 1 "123 Dreamland Street" hoTextFormat
+        Send WriteStringWithFormat of hoSheet 11 1 "Moema, 52674" hoTextFormat
+        Send WriteNumberWithFormat of hoSheet 12 1 2659872055 hoPhoneFormat
+
+        Send WriteStringWithFormat of hoSheet 14 0 "Item #" hoTextFormat
+        Send WriteStringWithFormat of hoSheet 14 1 "Description" hoTextFormat
+        Send WriteStringWithFormat of hoSheet 14 2 "Qty" hoTextFormat
+        Send WriteStringWithFormat of hoSheet 14 3 "Unit Price" hoTextFormat
+        Send WriteStringWithFormat of hoSheet 14 4 "Line Total" hoTextFormat
+
+        For iRow from 15 to 37
+            Set piRowHeight of hoSheet iRow to 15
+
+            For iCol from 0 to 2
+                Send WriteBlankWithFormat of hoSheet iRow iCol hoBorderFormat
+            Loop
+            Send WriteBlankWithFormat of hoSheet iRow 3 hoDollarFormat
+
+            Send WriteFormulaWithFormat of hoSheet iRow 4 ;
+                    (SFormat('IF(C%1>0;ABS(C%1*D%1);"")', iRow+1)) hoDollarFormat
+        Loop
+
+        Send WriteStringWithFormat of hoSheet 38 3 "Subtotal " hoTextRightFormat
+        Send WriteStringWithFormat of hoSheet 39 3 "Sales Tax " hoTextRightFormat
+        Send WriteStringWithFormat of hoSheet 40 3 "Total " hoTextRightFormat
+        Send WriteFormulaWithFormat of hoSheet 38 4 "SUM(E16:E38)" hoDollarFormat
+        Send WriteNumberWithFormat of hoSheet 39 4 0.2 hoPercentFormat
+        Send WriteFormulaWithFormat of hoSheet 40 4 "E39+E39*E40" hoDollarFormat
+        Set piRowHeight of hoSheet 38 to 15
+        Set piRowHeight of hoSheet 39 to 15
+        Set piRowHeight of hoSheet 40 to 15
+
+        Send WriteStringWithFormat of hoSheet 42 0 "Thank you for your business!" hoThankFormat
+        Send MergeCells of hoSheet 42 0 42 4
+
+        // items
+
+        Send WriteNumberWithFormat of hoSheet 15 0 45 hoBorderFormat
+        Send WriteStringWithFormat of hoSheet 15 1 "Grapes" hoBorderFormat
+        Send WriteNumberWithFormat of hoSheet 15 2 250 hoBorderFormat
+        Send WriteNumberWithFormat of hoSheet 15 3 4.5 hoDollarFormat
+
+        Send WriteNumberWithFormat of hoSheet 16 0 12 hoBorderFormat
+        Send WriteStringWithFormat of hoSheet 16 1 "Bananas" hoBorderFormat
+        Send WriteNumberWithFormat of hoSheet 16 2 480 hoBorderFormat
+        Send WriteNumberWithFormat of hoSheet 16 3 1.4 hoDollarFormat
+
+        Send WriteNumberWithFormat of hoSheet 17 0 19 hoBorderFormat
+        Send WriteStringWithFormat of hoSheet 17 1 "Apples" hoBorderFormat
+        Send WriteNumberWithFormat of hoSheet 17 2 180 hoBorderFormat
+        Send WriteNumberWithFormat of hoSheet 17 3 2.8 hoDollarFormat
+
+        Send SaveAs of hoBook (sBasePath+"receipt.dynamic.xls")
+
+        // destroying hoBook also destroys all the other objects
+        Send Destroy of hoBook
+    End_Procedure
+
+End_Object

@@ -1,0 +1,67 @@
+// Generic function to dump all data from a database table to an Excel document
+//
+Function ExportExcel Handle hTable Integer iIndex String sFilename Returns Integer
+    String sPath sTable sVal 
+    Number nVal
+    Integer iRow iField iNumFields iFieldType iError
+    Handle bOpen hoBook hoSheet
+    Send Ignore_Error of Error_Info_Object 74
+    Get_Attribute DF_FILE_OPENED of hTable to bOpen
+    If (not(bOpen)) Begin
+        Open hTable
+    End
+    If (Err) Begin
+        If (LastErr=74) Begin
+            Send Stop_Box ("File "+String(hTable)+" not in Filelist!")
+            Function_Return 0
+        End
+    End
+    Send Trap_Error of Error_Info_Object 74
+    If (Right(Lowercase(sFilename),1)="x") Begin
+        Get CreateXMLBook of oLibXL to hoBook
+    End
+    Else Begin
+        Get CreateBook of oLibXL to hoBook
+    End
+    If (hoBook) Begin
+        Get_Attribute DF_FILE_LOGICAL_NAME of hTable to sTable
+        Get AddSheet of hoBook sTable 0 to hoSheet
+        If (hoSheet) Begin
+            Get_Attribute DF_FILE_NUMBER_FIELDS of hTable to iNumFields
+            // Fill the first row with field names of the table
+            For iField from 1 to iNumFields
+                Get_Attribute DF_FIELD_NAME of hTable iField to sVal
+                Send WriteString of hoSheet 0 (iField-1) sVal 
+            Loop
+            Move 1 to iRow
+            // Now read all records and output one line per record with all data fields
+            Clear hTable
+            Vfind hTable iIndex GT
+            While (Found)
+                For iField from 1 to iNumFields
+                    Get_Attribute DF_FIELD_TYPE of hTable iField to iFieldType
+                    If (iFieldType=DF_BCD) Begin
+                        Get_Field_Value hTable iField to nVal
+                        Send WriteNumber of hoSheet iRow (iField-1) nVal 
+                    End
+                    Else Begin
+                        Get_Field_Value hTable iField to sVal
+                        Send WriteString of hoSheet iRow (iField-1) sVal 
+                    End
+                Loop
+                Increment iRow
+                Vfind hTable iIndex GT
+            Loop
+            // In this case you would like the header row to stay static while other rows scroll
+            Send Split of hoSheet 1 0
+            Send Destroy of hoSheet
+        End
+        Get psHelpPath of (phoWorkspace(ghoApplication)) to sPath
+        Send SaveAs of hoBook (sPath+"\"+sFilename)
+        Send Destroy of hoBook
+    End
+    // Return the number of rows written
+    Decrement iRow  // Don't count in the header...
+    Function_Return iRow
+End_Function
+    

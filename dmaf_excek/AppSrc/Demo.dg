@@ -1,0 +1,94 @@
+Use Windows.pkg
+Use File_dlg.pkg
+
+Use DemoConvertToCsv.bp
+Use DemoGenerateReceipt.bp
+Use DemoGenerateReceipt_LL.bp
+Use DemoGenerateReceipt_static.bp
+
+Class cDemoExampleButton is a Button
+
+    Procedure Construct_Object
+        Forward Send Construct_Object
+
+        Property Integer phoExampleBusinessProcess
+
+        Set Size to 14 80
+    End_Procedure
+
+    Procedure OnClick
+        Handle hoBP
+
+        Forward Send OnClick
+
+        Get phoExampleBusinessProcess to hoBP
+        If (hoBP <> 0) Send DoProcess of hoBP
+    End_Procedure
+
+End_Class
+
+Object oDemo is a ModalPanel
+    Set Size to 89 260
+    Set Label to "LibXL demo"
+    Set piMinSize to 89 260
+    Set Location to 2 2
+    Set Border_Style To Border_Thick
+
+    Object oOpenXlsDialog is an OpenDialog
+        Set Filter_String to 'Excel files|*.xls;*.xlsx'
+        Set Filter_Index to 2
+        Set Dialog_Caption to "Select an Excel file to convert"
+        Set HideReadOnly_State to True
+        Set Initial_Folder to "%USERPROFILE%\Documents"
+    End_Object
+
+    Object oExample1_LL_Btn is a cDemoExampleButton
+        Set Label    to "Create receipt (low-level)"
+        Set Location to 4 4
+        Set phoExampleBusinessProcess to oDemoGenerateReceipt_LL_BP
+    End_Object
+
+    Object oExample1_Btn is a cDemoExampleButton
+        Set Label    to "Create receipt"
+        Set Location to 4 88
+        Set phoExampleBusinessProcess to oDemoGenerateReceipt_BP
+    End_Object
+
+    Object oExample1_Static_Btn is a cDemoExampleButton
+        Set Label    to "Create receipt (static)"
+        Set Location to 4 172
+        Set phoExampleBusinessProcess to oDemoGenerateReceipt_static_BP
+    End_Object
+
+    Object oExample2_Btn is a Button
+        Set Size to 14 80
+        Set Location to 23 88
+        Set Label to 'Convert xls(x) to csv'
+
+        Procedure OnClick
+            Boolean  bOpen
+            String[] asFiles
+
+            Get Show_Dialog of oOpenXlsDialog to bOpen
+            If bOpen Begin
+                Get Selected_Files of oOpenXlsDialog to asFiles
+                If (SizeOfArray(asFiles) > 0) Begin
+                    Set psFileName of oDemoConvertToCsv_BP to asFiles[0]
+                    Send DoProcess of oDemoConvertToCsv_BP
+                End
+            End
+        End_Procedure
+    End_Object
+
+    Object oClose_Btn is a Button
+        Set Label    to "&Close"
+        Set Location to 71 206
+        Set peAnchors to anBottomRight
+
+        Procedure OnClick
+            Send Close_Panel
+        End_Procedure
+    End_Object
+
+    On_Key Key_Alt+Key_C Send KeyAction of oClose_Btn
+End_Object

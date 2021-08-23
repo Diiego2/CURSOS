@@ -1,0 +1,167 @@
+Use cLibXLDemoBusinessProcess.pkg
+
+// Same as LibXL "Writing data" example (2017-05-12)
+// [http://libxl.com/write-excel-data.html]
+
+// Things to note:
+// * requires ToANSI() a lot
+// * many calls without return values (gVoid)
+
+Object oDemoGenerateReceipt_LL_BP is a cLibXLDemoBusinessProcess
+
+    Procedure OnProcess
+        Address aBook aSheet
+        Address aFont10 aFont12 aTextFont aTitleFont
+        Address aBorderFormat aCompanyFormat aDateFormat aPhoneFormat aTextFormat aTitleFormat
+        Address aDollarFormat aPercentFormat aTextRightFormat aThankFormat
+        Integer iCol iRow
+        String  sBasePath
+        xlPictureId iLogoId
+
+        Get DemoFilesPath to sBasePath
+
+        Move (xlCreateBookC()) to aBook
+        // remember to set license info
+        Move (xlBookSetKey(aBook, ToANSI(psLicenseName(oLibXL)), ToANSI(psLicenseKey(oLibXL)))) to gVoid
+        Move (xlBookAddPicture(aBook, ToANSI(sBasePath+"logo.png"))) to iLogoId
+
+        // fonts
+
+        Move (xlBookAddFont(aBook, 0)) to aTextFont
+        Move (xlFontSetSize(aTextFont, 8)) to gVoid
+        Move (xlFontSetName(aTextFont, ToANSI("Century Gothic"))) to gVoid
+
+        Move (xlBookAddFont(aBook, aTextFont)) to aTitleFont
+        Move (xlFontSetSize(aTitleFont, 38)) to gVoid
+        Move (xlFontSetColor(aTitleFont, XL_COLOR_GRAY25)) to gVoid
+
+        Move (xlBookAddFont(aBook, aTextFont)) to aFont12
+        Move (xlFontSetSize(aFont12, 12)) to gVoid
+
+        Move (xlBookAddFont(aBook, aTextFont)) to aFont10
+        Move (xlFontSetSize(aFont10, 10)) to gVoid
+
+        // formats
+
+        Move (xlBookAddFormat(aBook, 0)) to aTextFormat
+        Move (xlFormatSetFont(aTextFormat, aTextFont)) to gVoid
+        Move (xlFormatSetAlignH(aTextFormat, XL_ALIGNH_LEFT)) to gVoid
+
+        Move (xlBookAddFormat(aBook, 0)) to aTitleFormat
+        Move (xlFormatSetFont(aTitleFormat, aTitleFont)) to gVoid
+        Move (xlFormatSetAlignH(aTitleFormat, XL_ALIGNH_RIGHT)) to gVoid
+
+        Move (xlBookAddFormat(aBook, 0)) to aCompanyFormat
+        Move (xlFormatSetFont(aCompanyFormat, aFont12)) to gVoid
+
+        Move (xlBookAddFormat(aBook, aTextFormat)) to aDateFormat
+        Move (xlFormatSetNumFormat(aDateFormat, xlBookAddCustomNumFormat(aBook, ;
+                ToANSI("[$-409]mmmm\ d\,\ yyyy;@")))) to gVoid
+
+        Move (xlBookAddFormat(aBook, aTextFormat)) to aPhoneFormat
+        Move (xlFormatSetNumFormat(aPhoneFormat, xlBookAddCustomNumFormat(aBook, ;
+                ToANSI("[<=9999999]###\-####;\(###\)\ ###\-####")))) to gVoid
+
+        Move (xlBookAddFormat(aBook, aTextFormat)) to aBorderFormat
+        Move (xlFormatSetBorder(aBorderFormat, XL_BORDERSTYLE_THIN)) to gVoid
+        Move (xlFormatSetBorderColor(aBorderFormat, XL_COLOR_GRAY25)) to gVoid
+        Move (xlFormatSetAlignV(aBorderFormat, XL_ALIGNV_CENTER)) to gVoid
+
+        Move (xlBookAddFormat(aBook, aBorderFormat)) to aPercentFormat
+        Move (xlFormatSetNumFormat(aPercentFormat, xlBookAddCustomNumFormat(aBook, ToANSI("#%_)")))) to gVoid
+        Move (xlFormatSetAlignH(aPercentFormat, XL_ALIGNH_RIGHT)) to gVoid
+
+        Move (xlBookAddFormat(aBook, aTextFormat)) to aTextRightFormat
+        Move (xlFormatSetAlignH(aTextRightFormat, XL_ALIGNH_RIGHT)) to gVoid
+        Move (xlFormatSetAlignV(aTextRightFormat, XL_ALIGNV_CENTER)) to gVoid
+
+        Move (xlBookAddFormat(aBook, 0)) to aThankFormat
+        Move (xlFormatSetFont(aThankFormat, aFont10)) to gVoid
+        Move (xlFormatSetAlignH(aThankFormat, XL_ALIGNH_CENTER)) to gVoid
+
+        Move (xlBookAddFormat(aBook, aBorderFormat)) to aDollarFormat
+        Move (xlFormatSetNumFormat(aDollarFormat, xlBookAddCustomNumFormat(aBook, ;
+                ToANSI("_($* # ##0.00_);_($* (# ##0.00);_($* -??_);_(@_)")))) to gVoid
+
+        // actions
+
+        Move (xlBookAddSheet(aBook, ToANSI("Sales Receipt"), 0)) to aSheet
+
+        Move (xlSheetSetDisplayGridlines(aSheet, False)) to gVoid
+
+        Move (xlSheetSetCol(aSheet, 1, 1, 36, 0, 0)) to gVoid
+        Move (xlSheetSetCol(aSheet, 0, 0, 10, 0, 0)) to gVoid
+        Move (xlSheetSetCol(aSheet, 2, 4, 11, 0, 0)) to gVoid
+
+        Move (xlSheetSetRow(aSheet, 2, 47.25, 0, 0)) to gVoid
+        Move (xlSheetWriteStr(aSheet, 2, 1, ToANSI("Sales Receipt"), aTitleFormat)) to gVoid
+        Move (xlSheetSetMerge(aSheet, 2, 2, 1, 4)) to gVoid
+        Move (xlSheetSetPicture2(aSheet, 2, 1, iLogoId, 50, 50, 0, 0, 0)) to gVoid
+
+        Move (xlSheetWriteStr(aSheet, 4, 0, ToANSI("Apricot Ltd."), aCompanyFormat)) to gVoid
+        Move (xlSheetWriteStr(aSheet, 4, 3, ToANSI("Date:"), aTextFormat)) to gVoid
+        Move (xlSheetWriteFormula(aSheet, 4, 4, ToANSI("TODAY()"), aDateFormat)) to gVoid
+
+        Move (xlSheetWriteStr(aSheet, 5, 3, ToANSI("Receipt #:"), aTextFormat)) to gVoid
+        Move (xlSheetWriteNum(aSheet, 5, 4, 652, aTextFormat)) to gVoid
+
+        Move (xlSheetWriteStr(aSheet, 8, 0, ToANSI("Sold to:"), aTextFormat)) to gVoid
+        Move (xlSheetWriteStr(aSheet, 8, 1, ToANSI("John Smith"), aTextFormat)) to gVoid
+        Move (xlSheetWriteStr(aSheet, 9, 1, ToANSI("Pineapple Ltd."), aTextFormat)) to gVoid
+        Move (xlSheetWriteStr(aSheet, 10, 1, ToANSI("123 Dreamland Street"), aTextFormat)) to gVoid
+        Move (xlSheetWriteStr(aSheet, 11, 1, ToANSI("Moema, 52674"), aTextFormat)) to gVoid
+        Move (xlSheetWriteNum(aSheet, 12, 1, 2659872055, aPhoneFormat)) to gVoid
+
+        Move (xlSheetWriteStr(aSheet, 14, 0, ToANSI("Item #"), aTextFormat)) to gVoid
+        Move (xlSheetWriteStr(aSheet, 14, 1, ToANSI("Description"), aTextFormat)) to gVoid
+        Move (xlSheetWriteStr(aSheet, 14, 2, ToANSI("Qty"), aTextFormat)) to gVoid
+        Move (xlSheetWriteStr(aSheet, 14, 3, ToANSI("Unit Price"), aTextFormat)) to gVoid
+        Move (xlSheetWriteStr(aSheet, 14, 4, ToANSI("Line Total"), aTextFormat)) to gVoid
+
+        For iRow from 15 to 37
+            Move (xlSheetSetRow(aSheet, iRow, 15, 0, 0)) to gVoid
+
+            For iCol from 0 to 2
+                Move (xlSheetWriteBlank(aSheet, iRow, iCol, aBorderFormat)) to gVoid
+            Loop
+            Move (xlSheetWriteBlank(aSheet, iRow, 3, aDollarFormat)) to gVoid
+
+            Move (xlSheetWriteFormula(aSheet, iRow, 4, ;
+                    (SFormat('IF(C%1>0;ABS(C%1*D%1);"")', iRow+1)), aDollarFormat)) to gVoid
+        Loop
+
+        Move (xlSheetWriteStr(aSheet, 38, 3, ToANSI("Subtotal "), aTextRightFormat)) to gVoid
+        Move (xlSheetWriteStr(aSheet, 39, 3, ToANSI("Sales Tax "), aTextRightFormat)) to gVoid
+        Move (xlSheetWriteStr(aSheet, 40, 3, ToANSI("Total "), aTextRightFormat)) to gVoid
+        Move (xlSheetWriteFormula(aSheet, 38, 4, ToANSI("SUM(E16:E38)"), aDollarFormat)) to gVoid
+        Move (xlSheetWriteNum(aSheet, 39, 4, 0.2, aPercentFormat)) to gVoid
+        Move (xlSheetWriteFormula(aSheet, 40, 4, ToANSI("E39+E39*E40"), aDollarFormat)) to gVoid
+        Move (xlSheetSetRow(aSheet, 38, 15, 0, 0)) to gVoid
+        Move (xlSheetSetRow(aSheet, 39, 15, 0, 0)) to gVoid
+        Move (xlSheetSetRow(aSheet, 40, 15, 0, 0)) to gVoid
+
+        Move (xlSheetWriteStr(aSheet, 42, 0, ToANSI("Thank you for your business!"), aThankFormat)) to gVoid
+        Move (xlSheetSetMerge(aSheet, 42, 42, 0, 4)) to gVoid
+
+        // items
+
+        Move (xlSheetWriteNum(aSheet, 15, 0, 45, aBorderFormat)) to gVoid
+        Move (xlSheetWriteStr(aSheet, 15, 1, ToANSI("Grapes"), aBorderFormat)) to gVoid
+        Move (xlSheetWriteNum(aSheet, 15, 2, 250, aBorderFormat)) to gVoid
+        Move (xlSheetWriteNum(aSheet, 15, 3, 4.5, aDollarFormat)) to gVoid
+
+        Move (xlSheetWriteNum(aSheet, 16, 0, 12, aBorderFormat)) to gVoid
+        Move (xlSheetWriteStr(aSheet, 16, 1, ToANSI("Bananas"), aBorderFormat)) to gVoid
+        Move (xlSheetWriteNum(aSheet, 16, 2, 480, aBorderFormat)) to gVoid
+        Move (xlSheetWriteNum(aSheet, 16, 3, 1.4, aDollarFormat)) to gVoid
+
+        Move (xlSheetWriteNum(aSheet, 17, 0, 19, aBorderFormat)) to gVoid
+        Move (xlSheetWriteStr(aSheet, 17, 1, ToANSI("Apples"), aBorderFormat)) to gVoid
+        Move (xlSheetWriteNum(aSheet, 17, 2, 180, aBorderFormat)) to gVoid
+        Move (xlSheetWriteNum(aSheet, 17, 3, 2.8, aDollarFormat)) to gVoid
+
+        Move (xlBookSave(aBook, ToANSI(sBasePath+"receipt.low-level.xls"))) to gVoid
+        Move (xlBookRelease(aBook)) to gVoid
+    End_Procedure
+
+End_Object

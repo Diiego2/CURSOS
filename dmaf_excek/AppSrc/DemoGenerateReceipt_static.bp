@@ -1,0 +1,228 @@
+Use cLibXLDemoBusinessProcess.pkg
+
+// Same as LibXL "Writing data" example (2017-05-12)
+// [http://libxl.com/write-excel-data.html]
+
+// Things to note:
+// * no ToANSI() needed
+// * No void return types
+// * even cleaner syntax than for dynamic objects
+// * predefine fonts and formats (and even sheets), including support for subclasses!
+// * clear separation of styling, fixed structure, and data.
+
+// Provides a basic LibXLBook subclass with some predefined styling fonts/formats.
+Class oMyStyleLibXLBook is a cLibXLBook
+
+    Procedure Construct_Object
+        Forward Send Construct_Object
+
+        //*** fonts
+
+        Object oTextFont is a cLibXLFont
+            Set psName to "Century Gothic"
+            Set piSize to 8
+        End_Object
+
+        Object oFont10 is a cLibXLFont
+            Set phoInitFont to oTextFont    // inheritance (sort of)
+            Set piSize to 10
+        End_Object
+
+        Object oFont12 is a cLibXLFont
+            Set phoInitFont to oTextFont
+            Set piSize to 12
+        End_Object
+
+        Object oTitleFont is a cLibXLFont
+            Set phoInitFont to oTextFont
+            Set piSize to 38
+            Set piColor to XL_COLOR_GRAY25
+        End_Object
+
+        //*** formats
+
+        Object oTextFormat is a cLibXLFormat
+            Set phoFont to oTextFont
+            Set peAlignH to XL_ALIGNH_LEFT
+        End_Object
+
+        Object oBorderFormat is a cLibXLFormat
+            Set phoInitFormat to oTextFormat    // inheritance (sort of)
+            Send SetBorderColor XL_COLOR_GRAY25
+            Send SetBorderStyle XL_BORDERSTYLE_THIN
+        End_Object
+
+        Object oCompanyFormat is a cLibXLFormat
+            Set phoFont to oFont12
+        End_Object
+
+        Object oDateFormat is a cLibXLFormat
+            Set phoInitFormat to oTextFormat
+            Send SetCustomNumFormat "[$-409]mmmm\ d\,\ yyyy;@"
+        End_Object
+
+        Object oDollarFormat is a cLibXLFormat
+            Set phoInitFormat to oBorderFormat
+            Send SetCustomNumFormat "_($* # ##0.00_);_($* (# ##0.00);_($* -??_);_(@_)"
+        End_Object
+
+        Object oPercentFormat is a cLibXLFormat
+            Set phoInitFormat to oBorderFormat
+            Set peAlignH to XL_ALIGNH_RIGHT
+            Send SetCustomNumFormat "#%_)"
+        End_Object
+
+        Object oPhoneFormat is a cLibXLFormat
+            Set phoInitFormat to oTextFormat
+            Send SetCustomNumFormat "[<=9999999]###\-####;\(###\)\ ###\-####"
+        End_Object
+
+        Object oTextRightFormat is a cLibXLFormat
+            Set phoInitFormat to oTextFormat
+            Set peAlignH to XL_ALIGNH_RIGHT
+            Set peAlignV to XL_ALIGNV_CENTER
+        End_Object
+
+        Object oThankFormat is a cLibXLFormat
+            Set peAlignH to XL_ALIGNH_CENTER
+            Set phoFont to oFont10
+        End_Object
+
+        Object oTitleFormat is a cLibXLFormat
+            Set phoFont to oTitleFont
+            Set peAlignH to XL_ALIGNH_RIGHT
+        End_Object
+    End_Procedure
+
+End_Class
+
+Object oDemoGenerateReceipt_static_BP is a cLibXLDemoBusinessProcess
+
+    // Receipt Excel book using my default styling.
+    Object oSalesReceiptBook is a oMyStyleLibXLBook
+
+        Object oSalesReceiptSheet is a cLibXLSheet
+            Set psName to "Sales Receipt"
+            Set pbDisplayGridlines to False
+
+            Property Integer piLastReceiptLine 0
+
+            Procedure OnInitialize
+                Integer iCol iRow
+                String  sBasePath
+                xlPictureId iLogoId
+
+                Set piLastReceiptLine to 0
+
+                Get DemoFilesPath to sBasePath
+
+                Set piColumnWidth 0 to 10
+                Set piColumnWidth 1 to 36
+                Set piColumnWidth 2 to 11
+                Set piColumnWidth 3 to 11
+                Set piColumnWidth 4 to 11
+
+                Set piRowHeight 2 to 47.25
+                Send MergeCells 2 1 2 4
+                Send WriteStringWithFormat 2 1 "Sales Receipt" oTitleFormat
+                Get AddPictureFromFile (sBasePath+"logo.png") to iLogoId
+                Send SetPictureSized iLogoId 2 1 0 0 50 50
+
+                Send WriteStringWithFormat 4 3 "Date:" oTextFormat
+                Send WriteFormulaWithFormat 4 4 "TODAY()" oDateFormat
+
+                Send WriteStringWithFormat 5 3 "Receipt #:" oTextFormat
+
+                Send WriteStringWithFormat 8 0 "Sold to:" oTextFormat
+
+                Send WriteStringWithFormat 14 0 "Item #" oTextFormat
+                Send WriteStringWithFormat 14 1 "Description" oTextFormat
+                Send WriteStringWithFormat 14 2 "Qty" oTextFormat
+                Send WriteStringWithFormat 14 3 "Unit Price" oTextFormat
+                Send WriteStringWithFormat 14 4 "Line Total" oTextFormat
+
+                For iRow from 15 to 37
+                    Set piRowHeight iRow to 15
+
+                    For iCol from 0 to 2
+                        Send WriteBlankWithFormat iRow iCol oBorderFormat
+                    Loop
+                    Send WriteBlankWithFormat iRow 3 oDollarFormat
+                    Send WriteFormulaWithFormat iRow 4 (SFormat('IF(C%1>0;ABS(C%1*D%1);"")', iRow+1)) oDollarFormat
+                Loop
+
+                Set piRowHeight 38 to 15
+                Send WriteStringWithFormat  38 3 "Subtotal " oTextRightFormat
+                Send WriteFormulaWithFormat 38 4 "SUM(E16:E38)" oDollarFormat
+
+                Set piRowHeight 39 to 15
+                Send WriteStringWithFormat  39 3 "Sales Tax " oTextRightFormat
+                Send WriteNumberWithFormat  39 4 0.2 oPercentFormat
+
+                Set piRowHeight 40 to 15
+                Send WriteStringWithFormat  40 3 "Total " oTextRightFormat
+                Send WriteFormulaWithFormat 40 4 "E39+E39*E40" oDollarFormat
+
+                Send MergeCells 42 0 42 4
+                Send WriteStringWithFormat 42 0 "Thank you for your business!" oThankFormat
+            End_Procedure
+
+            Procedure SetCompanyName String sName
+                Send WriteStringWithFormat 4 0 sName oCompanyFormat
+            End_Procedure
+
+            Procedure SetReceiptNo Integer iNo
+                Send WriteNumberWithFormat 5 4 iNo oTextFormat
+            End_Procedure
+
+            Procedure SetCustomerNameAddress String sPersonName String sCompanyName String sAddress String sZip String sCity Real rPhone
+                Send WriteStringWithFormat 8 1 sPersonName oTextFormat
+                Send WriteStringWithFormat 9 1 sCompanyName oTextFormat
+                Send WriteStringWithFormat 10 1 sAddress oTextFormat
+                Send WriteStringWithFormat 11 1 (SFormat("%1, %2", sCity, sZip)) oTextFormat
+                Send WriteNumberWithFormat 12 1 rPhone oPhoneFormat
+            End_Procedure
+
+            Procedure AddReceiptLine Integer iItemNo String sDescr Integer iQty Real rPriceEach
+                Integer iLastReceiptLine iLine
+
+                Get piLastReceiptLine to iLastReceiptLine
+                Move (15 + iLastReceiptLine) to iLine
+
+                Send WriteNumber iLine 0 iItemNo
+                Send WriteString iLine 1 sDescr
+                Send WriteNumber iLine 2 iQty
+                Send WriteNumber iLine 3 rPriceEach
+
+                Increment iLastReceiptLine
+                Set piLastReceiptLine to iLastReceiptLine
+            End_Procedure
+        End_Object
+
+    End_Object
+
+    // using static interface
+    Procedure OnProcess
+        Handle hoBook hoSheet hoSheetTemplate
+        String sBasePath
+
+        Get DemoFilesPath to sBasePath
+
+        Move oSalesReceiptBook to hoBook
+        Send CreateBook of hoBook
+            Move (oSalesReceiptSheet(hoBook)) to hoSheet
+
+            Send SetCompanyName of hoSheet "Apricot Ltd."
+            Send SetReceiptNo of hoSheet 652
+            Send SetCustomerNameAddress of hoSheet ;
+                "John Smith" "Pineapple Ltd." "123 Dreamland Street" "52674" "Moema" 2659872055
+
+            Send AddReceiptLine of hoSheet 45 "Grapes" 250 4.5
+            Send AddReceiptLine of hoSheet 12 "Bananas" 480 1.4
+            Send AddReceiptLine of hoSheet 19 "Apples" 180 2.8
+
+            Send SaveAs of hoBook (sBasePath+"receipt.static.xls")
+        Send Release of hoBook
+    End_Procedure
+
+End_Object
