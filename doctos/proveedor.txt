@@ -1,0 +1,38 @@
+, - ;
+á - !
+é - #
+í - $
+ó - %
+ú - ?
+ñ - |
+
+Campos update 
+PROVEEDOR.Nombre_completo
+PROVEEDOR.Direccion
+PROVEEDOR.PAIS
+PROVEEDOR.BENEFICIARIO
+PROVEEDOR.COMENTARIOS
+PROVEEDOR.DIRECCION2 
+
+PROV_CONT.NOMBRE
+PROV_CONT.PUESTO
+
+UPDATE PRVEEDOR SET PRVEEDOR.Nombre_completo =  UPPER(REPLACE(Nombre_completo,'%' , 'ó'))
+,PRVEEDOR.Direccion =  (REPLACE(Direccion,'%' , 'ó'))
+,PRVEEDOR.PAIS =  (REPLACE(PAIS,'%' , 'ó'))
+,PRVEEDOR.BENEFICIARIO =  (REPLACE(BENEFICIARIO,'%' , 'ó'))
+,PRVEEDOR.COMENTARIOS=  (REPLACE(COMENTARIOS,'%' , 'ó'))
+,PRVEEDOR.DIRECCION2 =  (REPLACE(DIRECCION2,'%' , 'ó'))
+
+
+UPDATE PROV_CONT SET NOMBRE = (REPLACE(NOMBRE,'%' , 'ó')),
+PUESTO = (REPLACE(PUESTO,'%' , 'ó'))
+
+
+*--------------------------------------------------------------------------------*
+
+*--------------------------------------------------------------------------------*
+
+
+
+

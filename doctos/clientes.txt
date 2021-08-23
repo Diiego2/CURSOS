@@ -1,0 +1,18 @@
+
+*--------------------------------------------------------------------------------*
+En estos campos se almaceno las columnas que no tienen campo para insertar y 
+Estos campos no se muestran en la pantalla.
+
+CLIENTE.DIRECCION_COMER - DIRECCION2
+CLIENTE. ENT_NOMBRE     - REGIMEN
+*--------------------------------------------------------------------------------*
+La primera colunmna de coódigo se agrego en codigo_verif y las segunda columna 
+de codugo en nombre_corto
+LA PRIMERA COLUMINA DE CODIGO SE AGREGO EN CODIGO_VERIFIC Y LA SEGUNDA
+
+*--------------------------------------------------------------------------------*
+en recursos el codigo anterior se almaceno en:REFERENCIA 
+
+
+
+

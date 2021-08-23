@@ -1,0 +1,56 @@
+02/04/2020
+1.- Crear menu a asist.src .25 
+*/instalar asist.mn
+	Las pantallas actuales y reportes dejarlos en un menu
+	Lo nuevo se debe de agregar a un menu como el de Tropi
+
+2.- Instalar pantalla Días de Asueto 1
+*/AGRECAR CAMPO MEDIODIA_SN
+*/DD DEFAULT N 
+*/VALUE TYPE CHECKBOX S/N
+*/Procedure Construct_Object
+*/Forward Send Construct_Object
+*/ACTUALIZAR PANTALLA
+
+
+	Agregar filtro (Constrain) de año para que solo se visualice los del año que se indica 2
+3.- Instalar pantalla Datos de Horarios 1
+
+*/CREAR TIPO ASSI 1 CODIGO2 ASSI 15
+*/ INDEX CODIGO 2
+*/DD CATALOGO DE TIPO D N M
+*/DD CATALOGO DE INICO ORD Y FIN ORD Y CAMBIAR A ASSI DE 5
+*/COMENTARIAR UPDATE
+*/lista de seleccion horario
+	Bloquear column horarios, ya que al crear asigna dicho campo
+
+
+03/04/2020
+4.- crear pantalla donde se modifique las horas extras 2.50
+*/Agregar campo de horas extras en ficha
+*/actualizar sl entidad
+*/instalar nueva pantalla 
+
+5.-actualizar pkg de solarza y nombre en el asist. barra de obciones .25
+
+
+06/04/2020 .25
+6.- se agrego en los .mn de config y siac_Seg, se les agrego tambien la nueva barra de menu a todos los modulos.
+
+SUETO
+MEDIODIA_SN  ASCII 1
+ANIO         NUMBER 4
+
+HORARIO
+TIPO         ASCII 1 /* COLOCAR DEBAJO DE CODIGO 
+CODIGO2      ASCII 15
+
+/* INICIO_ORD CAMBIAR DE NUMBER A ASCII DE 5
+/* FIN_ORD CAMBIAR DE NUMBER A ASCII DE 5
+
+FICHA 
+
+HRS_EXT  NUMBER 4.2
+
+
+

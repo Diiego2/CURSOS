@@ -1,0 +1,52 @@
+TIPO CLIENTE,TIPO_CODIGO CLIENTE ,NOMBRE_COMPLETO,CONTACTO,PUESTO,CORREO
+1,4,ALTIAN PHARMA S.A.,Licenciada:Zoraida Garcia,Auditor de Calidad,
+3,1,AVINDUSTRIAS S.A.,Srita. Erlin Castro,Asistente ,
+3,1,AVINDUSTRIAS S.A.,Srita . Susan corzo,Asistente ,
+3,1,AVINDUSTRIAS S.A.,Srita. Victoria Delgado,Asistente ,
+3,1,AVINDUSTRIAS S.A.,Srita Elubia Gutierrez,Asistente ,
+3,1,AVINDUSTRIAS S.A.,Sr. Lenin Herrera,Bodega,
+3,1,AVINDUSTRIAS S.A.,Sr-Wilson Lopez,Bodega,
+3,1,AVINDUSTRIAS S.A.,Sr. Daniel Estupe,Bodega,
+3,1,AVINDUSTRIAS S.A.,Sr. Alexander Estupe,Bodega,
+3,2,COMPAÑÍA COMERCIAL Y FARMACEUTICA  S.A.,Martínez de Montepeque,,"inforealsa1@gmail.com,"
+8,1,CORPORACION INDYKNIT SOCIEDAD ANONIMA,Sr. Bernardo Gomez,Compras,
+6,4,CORPORACION LAFIMARQ S.A.,Srita. Claudia Taracena,Apifar,
+6,6,CORPORACION QUIRSA SOCIEDAD ANONIMA,,Logística,
+3,3,DISAVET,Sr. Oscar Guzman Romero,Encargada de Compras,
+7,3,DISTRIBUIDORA QUIMICOS VARIOS S.A.,Licda. Andrea Castillo,Asistente de Compras,
+4,3,DROGUERIA SINERGIA INTERNATIONAL S.A.,Sr. Juan Acajabon,Bodega de materias primas,
+6,13,DSM NUTRITIONAL PRODUCTS GUATEMALA S.A.,Sr. Anderson Sagastume,Contabilidad,anderson.sagastume@dsm.com
+1,22,ETHIS.A.,Srita. Claudia Saban,Compras,
+0,11,ETIX  CORPORATION S.A.,Srita. Estefany Morales,Compras,
+1,36,GRUPO FARMACEUTICO INTERNACIONAL SOCIEDAD ANONIMA,Sr. Carlos Castillo,Contabilidad,
+1,38,HAUT PHARMA  S.A.,Sr. Francisco Sandoval,Asistente,
+1,41,INDUSTRIA CENTROAMERICANA DE QUIMICOS FARMACEUTICOS S. A.,Lic. Oscar Gómez,,
+1,41,INDUSTRIA CENTROAMERICANA DE QUIMICOS FARMACEUTICOS S. A.,Srita. Ruth Godinez,Compras,rgodinez@lamfer.com.gt
+1,42,INDUSTRIA FARMACEUTICA S.A.,Srita. Kimberly Rodas,Asistente de Compras,
+1,42,INDUSTRIA FARMACEUTICA S.A.,Licda. Amparo Rodríguez,Control de Calidad,domirodrigueza@hotmail.com
+1,42,INDUSTRIA FARMACEUTICA S.A.,Srita. Karla Hernández,Contabilidad,
+1,43,INDUSTRIA QUIMICO FARMACEUTICA GUATEMALTECA S. A.,Lic. Mario López,Control de Calidad,
+1,43,INDUSTRIA QUIMICO FARMACEUTICA GUATEMALTECA S. A.,Licda.. Mariela Montes,Control de Calidad,
+3,8,LABIPHARM S.A.,Srita. Alejandra Perez,Asistente ,
+3,8,LABIPHARM S.A.,Sr. Cristian Garcia,Asistente ,
+3,8,LABIPHARM S.A.,Sr. Santiago Ajucham,Asistente ,
+3,8,LABIPHARM S.A.,Sr. Luis Antonio Chacon,Asistente ,
+3,8,LABIPHARM S.A.,Srita. Susan Jimenez,Asistente ,
+11,13,LABORATORIO DB S.A. DE C.V.,Sr. Gerardo Díaz Bazán,Producción,gerardodiazbazan@laboratoriodb.com
+11,13,LABORATORIO DB S.A. DE C.V.,Sr. José Roberto Soler,Producción,joserobertosoler@laboratoriodb.com
+1,56,LABORATORIO SANNO,Srita. Marisol Estrada,Asistente,
+1,56,LABORATORIO SANNO,Srita. Heidy Vasquez,Asistente,
+1,60,LABORATORIOS INNOVA S.A.,Sr.Katy Flores,Compras,labinnovasocio@gmail.com
+1,61,LABORATORIOS QUIMICO FARMACEUTICOS LANCASCO S.A.,Licda.Maria del Carmen Armas,Control  Calidad,marmas@lancasco.com
+11,21,LABORATORIOS TERAMED S.A. DE C.V.,Sr. Jaime Alexis Martínez,Importaciones,jamartinez@grupotecnoquimicas.com
+1,71,MARIO ANTONIO ROBLES / MEDIFAR,Sr. Carlos González,Compras,
+1,74,METTLER,Srita. Monica Barrios,Compras,
+3,14,MIC S.A.,Sr. Edy  Quiñonez Reyes,Compras,Edy.Reyes@popoyan.com.gt
+0,28,MOARVA,Srita. Zoily Mendez ,Compras,
+1,75,NUEVOS ETICOS NEOETHICALS S.A.,Stephany Stokes,Compras,stephanystokes@neoethicals.com
+1,79,PHARMACEUTICA MEDI-COS S.A.,Sr. Edson Cruz,compras,
+7,7,PROFACASA,Srita. Olga soto ,Compras,
+1,85,RICHAM INTERNACIONAL  S.A.,Lic. Milton Gamboa,Logística,asistencialogistica@richam.com
+2,8,SIMON S.A.,Sra. Maria Alejos ,Compras,
+2,8,SIMON S.A.,Sr. Julio Ordoñez,Compras,
+1,95,WELLCO CORPORATION SOCIEDAD ANONIMA,Srita. Jenifer Fuentes,Recepción,
